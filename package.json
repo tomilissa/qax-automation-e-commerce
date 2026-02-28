@@ -1,0 +1,31 @@
+{
+  "name": "qax-automation-playwright-pom",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Proyecto de automatización E2E con Playwright usando Page Object Model",
+  "author": "Tomas Lissarrague",
+  "license": "MIT",
+  "scripts": {
+    "install:browsers": "playwright install",
+    "test": "playwright test",
+    "test:ui": "playwright test --ui",
+    "test:headed": "playwright test --headed",
+    "test:debug": "playwright test --debug",
+    "test:single": "playwright test tests",
+    "test:trace": "playwright test --trace on",
+    "test:report": "playwright test --reporter=html",
+    "show:report": "playwright show-report",
+    "show:trace": "playwright show-trace trace.zip",
+    "test:record": "playwright codegen",
+    "test:desktop": "playwright test --project=\"Desktop Chrome\" --project=\"Desktop Firefox\"",
+    "test:tablet": "playwright test --project=\"Ipad Safari\" --project=\"Android Chrome\"",
+    "test:mobile": "playwright test --project=\"Mobile Chrome\" --project=\"Mobile Safari\"",
+    "test:all": "playwright test --project=\"Desktop Chrome\" --project=\"Desktop Firefox\" --project=\"Ipad Safari\" --project=\"Mobile Chrome\" --project=\"Mobile Safari\" --project=\"Android Chrome\""
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.41.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
