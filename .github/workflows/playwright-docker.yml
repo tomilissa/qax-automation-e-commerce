@@ -1,0 +1,30 @@
+name: Run Playwright Tests (Docker Hub Image)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+
+    container:
+      image: qaxacademy/qax-web-playwright:latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Install project dependencies
+        run: npm install
+
+      - name: Run Playwright tests
+        run: npx playwright test --reporter=html
+
+      - name: Upload HTML report
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
