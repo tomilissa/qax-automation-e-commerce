@@ -11,7 +11,7 @@ jobs:
     runs-on: ubuntu-latest
 
     container:
-      image: mcr.microsoft.com/playwright:v1.45.1-jammy
+      image: mcr.microsoft.com/playwright:v1.57.0-jammy
 
     steps:
       - name: Checkout repository
@@ -24,6 +24,9 @@ jobs:
         run: npx playwright install --with-deps
 
       - name: Run Playwright tests
+        # Los tres deben estar alineados verticalmente
+        env:
+          HOME: /root
         run: npx playwright test --reporter=html 
 
       - name: Upload HTML report
