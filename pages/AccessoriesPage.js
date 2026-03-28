@@ -7,6 +7,7 @@ export class AccessoriesPage extends BasePage {
     super(page);
   
   this.homeAccessoriesPageTitle = 'Home Accessories';
+  this.stacioneryPageTitle = 'Stationery';
   this.productQuantity = 1;
 
 
@@ -29,95 +30,78 @@ export class AccessoriesPage extends BasePage {
   this.finalcheckOutBtn = page.getByRole('link', { name: 'Proceed to checkout' });
   this.productAddedMessage = page.getByRole('heading', { name: /Product successfully added/i });
   this.mobileMenuBtn = page.locator('#menu-icon');
-  this.filterOKMobileBtn = page.locator('.btn.btn-secondary.ok');
 
   }
 
 
-  /* =========================
+/* =========================
      Actions
   ========================== */
-  async filterByColor(colorName) {
+  async filterByType(typeName) {
     const mobileFilterBtn = this.page.locator('#search_filter_toggler');
     const filterPanel = this.page.locator('#search_filters_wrapper');
 
-    let isMobile = false;
-    try {
-        await mobileFilterBtn.waitFor({ state: 'visible', timeout: 2000 });
-        isMobile = true;
-    } catch (e) {
-        isMobile = false;
-    }
+      // Verificamos si realmente necesitamos el flujo mobile
 
-    if (isMobile) {
-        await mobileFilterBtn.click();
-        await filterPanel.waitFor({ state: 'visible', timeout: 5000 });
+      
+      if (await mobileFilterBtn.isVisible()) {
+        await expect(mobileFilterBtn).toBeVisible({ timeout: 7000 });
+        await mobileFilterBtn.click({ force: true }); 
+      
+        await expect(filterPanel).toBeVisible({timeout: 5000});
 
-        const expander = filterPanel
-            .locator('.facet')
-            .filter({ hasText: /Color/i })
-            .locator('.navbar-toggler, .facet-title')
-            .filter({ visible: true })
-            .first();
+      // Localizar la sección de type de forma semántica
+        const typeSection = filterPanel.locator('section.facet', { hasText: /Paper Type/i }).first();
 
-        if (await expander.isVisible()) {
-            await expander.click();
-            await this.page.waitForTimeout(500); 
+        await typeSection.click();
+
+        const typeLink = typeSection.getByRole('link', { name: new RegExp(`^${typeName}`, 'i') });
+
+        await typeLink.waitFor({ state: 'visible', timeout: 5000 });
+        
+        await typeLink.click({ force: true });
+
+         const okButton = filterPanel.getByRole('button', { name: /OK/i });
+        await okButton.click();
+        
+        // Tip de experto: Esperar a que el panel desaparezca para asegurar que el filtro se aplicó
+        await expect(filterPanel).toBeHidden();
+
+        } else {
+        await this.filterBy(typeName);
         }
 
-        const colorLink = filterPanel
-            .getByRole('link', { name: new RegExp(colorName, 'i') })
-            .filter({ visible: true }) // Aseguramos que sea el link de Mobile
-            .first();
-        
-        await colorLink.click({ force: true });
-        await this.filterOKMobileBtn.click();
-    } else {
-        await this.filterBy(colorName);
       }
 
-  }
-  
+
   async filterByComposition(compositionName) {
     const mobileFilterBtn = this.page.locator('#search_filter_toggler');
     const filterPanel = this.page.locator('#search_filters_wrapper');
 
-    let isMobile = false;
-    try {
-        await mobileFilterBtn.waitFor({ state: 'visible', timeout: 2000 });
-        isMobile = true;
-    } catch (e) {
-        isMobile = false;
-    }
+    
 
-    if (isMobile) {
-        await mobileFilterBtn.click();
-        await filterPanel.waitFor({ state: 'visible', timeout: 5000 });
+    if (await mobileFilterBtn.isVisible({ timeout: 7000 })) {
+        await mobileFilterBtn.click({ force: true }); 
+      
+        await expect(filterPanel).toBeVisible({timeout: 5000});
 
-        const expander = filterPanel
-            .locator('.facet')
-            .filter({ hasText: /Composition/i })
-            .locator('.navbar-toggler, .facet-title')
-            .filter({ visible: true })
-            .first();
+        const facetComposition = filterPanel.locator('section.facet', { hasText: /Composition/i }).first();
+        await facetComposition.click();
 
-        if (await expander.isVisible()) {
-            await expander.click();
-            await this.page.waitForTimeout(500); 
+        const compositionLink = facetComposition.getByRole('link', { name: new RegExp(`^${compositionName}`, 'i') });
+        await compositionLink.waitFor({ state: 'visible', timeout: 5000 });
+        await compositionLink.click({ force: true });
+
+        const okButton = filterPanel.getByRole('button', { name: /OK/i });
+        await okButton.click();
+
+        await expect(filterPanel).toBeHidden();
+
+        } else {
+        await this.filterBy(compositionName);
         }
 
-        const compositionLink = filterPanel
-            .getByRole('link', { name: new RegExp(compositionName, 'i') })
-            .filter({ visible: true })
-            .first();
-        
-        await compositionLink.click({ force: true });
-        await this.filterOKMobileBtn.click();
-    } else {
-        await this.filterBy(compositionName);
       }
-
-  }
 
   async setQuantityandAddToCart() {
     await this.quantityInput.fill(this.productQuantity.toString());
@@ -133,7 +117,6 @@ export class AccessoriesPage extends BasePage {
   }
 
 
-
 /* =========================
      Assertions
   ========================== */
@@ -141,6 +124,12 @@ export class AccessoriesPage extends BasePage {
   async isAtAccessoriesPage() {
     await this.verifyTitle(this.homeAccessoriesPageTitle)
   }
+
+  async isAtStacioneryPage() {
+    await this.verifyTitle(this.stacioneryPageTitle)
+  }
+
+
 
   async verifyFilterIsActive(filterName, urlKeyword) {
     const mobileFilterBtn = this.page.locator('#search_filter_toggler');

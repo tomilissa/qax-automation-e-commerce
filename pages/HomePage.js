@@ -49,26 +49,34 @@ export class HomePage extends BasePage {
 }  
     
   async selectMainMenuOption(menuOption, subMenuOption) {
+    const isMobile = await this.mobileMenuBtn.isVisible();
 
-    const menuLocator = this.page.getByRole('link', { name: menuOption, exact: true });
-    const subMenuLocator = this.page.getByRole('link', { name: subMenuOption, exact: true });
-    
-    if (await this.mobileMenuBtn.isVisible()) {
+    if (isMobile) {
+        // 1. Abrir el menú
         await this.mobileMenuBtn.click();
-        
-        const expanderLocator = this.page
-            .locator('#mobile_top_menu_wrapper')
-            .locator('li')
-            .filter({ hasText: menuOption })
-            .locator('.navbar-toggler')
-            .first();
+        await this.page.waitForTimeout(500); // Espera bruta para que el DOM se asiente
 
-        await expanderLocator.click();
-        await subMenuLocator.click({ force: true });
+        // 2. FORZAR el click por JavaScript (Evaluate)
+        // Buscamos el link que contiene el texto y le disparamos el click al ancestro que expande
+        await this.page.evaluate((option) => {
+            const links = Array.from(document.querySelectorAll('#mobile_top_menu_wrapper a'));
+            const target = links.find(el => el.textContent.trim().includes(option));
+            if (target) {
+                const toggler = target.closest('li').querySelector('.navbar-toggler');
+                if (toggler) toggler.click();
+            }
+        }, menuOption);
+
+        // 3. Click directo al submenú usando el texto
+        const subMenu = this.page.locator('#mobile_top_menu_wrapper a', { hasText: subMenuOption }).first();
+        await expect(subMenu).toBeVisible({ timeout: 5000 });
+        await subMenu.click({ force: true });
     } else {
-        await this.selectMenuOption(menuLocator, subMenuLocator);
+        // Desktop: Vamos a lo seguro
+        await this.page.getByRole('link', { name: menuOption, exact: true }).first().hover();
+        await this.page.getByRole('link', { name: subMenuOption, exact: true }).first().click();
     }
-  }
+}
 
   async searchForProduct(productName) {
         await this.fill(this.searchBox, productName);

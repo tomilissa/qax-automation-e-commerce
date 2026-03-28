@@ -6,7 +6,7 @@ import { AccessoriesPage } from '../pages/AccessoriesPage';
 test.describe('Buscar productos', () => {
 
   const partialproductName = 'Mug';
-  const completeProductName = 'Mug The Best is yet to come';
+  const completeProductName = 'Mug Today is a good day';
 
   let homePage;
   let accessoriesPage; 

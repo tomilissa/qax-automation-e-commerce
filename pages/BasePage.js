@@ -30,10 +30,17 @@ export class BasePage {
         await this.doClick(subMenuOption);
   }
 
-  async filterBy(value) {
-    const filterRegex = new RegExp(`${value} \\(\\d+\\)`, 'i');
-    await this.page.getByRole('link', { name: filterRegex }).click();
-  }
+   async filterBy(value) {
+    const filterLink = this.page
+      .locator('#search_filters_wrapper')
+      .getByRole('link', { name: new RegExp(value, 'i') })
+      .first();
+
+    await filterLink.waitFor({ state: 'attached', timeout: 7000 });
+    await filterLink.scrollIntoViewIfNeeded();
+    await expect(filterLink).toBeVisible({ timeout: 7000 });
+    await filterLink.click();
+  }  
 
   async select(locator, value) {
     await locator.selectOption({ label: value });

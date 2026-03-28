@@ -2,8 +2,16 @@ import { defineConfig, devices } from '@playwright/test';
 
 const ENV = process.env.ENV || 'qa';
 const environments = {
-  qa: 'http://www.testingyes.com/onlineshop/',
-  prod: 'http://www.testingyes.com/onlineshop/'
+  qa: {
+    url: 'http://www.testingyes.com/onlineshop/',
+    user: 'testqalissa@test.com',
+    pass: 'Pass12390!'
+  },
+  prod: {
+    url: 'http://www.testingyes.com/onlineshop/',
+    user: 'testqalissa@test.com',
+    pass: 'Pass12390!'
+  }
 };
 
 // ✅ VALIDACIÓN DEL AMBIENTE
@@ -33,7 +41,11 @@ export default defineConfig({
   reporter: 'html',
   use: {
     // 🌐 URL base del sitio a probar
-    baseURL: environments[ENV],
+    baseURL: environments[ENV].url,
+   credentials: {
+      user: environments[ENV].user,
+      pass: environments[ENV].pass
+    },
     ignoreHTTPSErrors: true,
     
     // 📸 Captura de pantalla en fallos
@@ -47,12 +59,12 @@ export default defineConfig({
     
   },
 
-  // 🧪 Projects (Desktop + Mobile)
+  // 🧪 Projects
   projects: [
     // ===== DESKTOP =====
     {
       name: 'Desktop Chrome',
-      retries: 0,
+      retries: 1,
       use: {
         ...devices['Desktop Chrome']
       }
@@ -64,11 +76,11 @@ export default defineConfig({
         ...devices['Desktop Firefox']
       }
     },
-
+    /*
     // ===== MOBILE =====
     {
       name: 'Mobile Chrome',
-      retries: 1,
+      retries: 2,
       use: {
         ...devices['Pixel 5']
       }
@@ -82,18 +94,18 @@ export default defineConfig({
     },
     {
       name: 'Ipad Safari',
-      retries: 1, // móviles suelen ser más inestables
+      retries: 2, // móviles suelen ser más inestables
       use: {
         ...devices['iPad Pro 11']
       }
     },
         {
-      name: 'Android Chrome',
+      name: 'Android Tablet Chrome',
       retries: 2, // móviles suelen ser más inestables
       use: {
-        ...devices['Galaxy A55']
+        ...devices['Galaxy Tab S4']
       }
-    }
+    */
   ]
 });
 

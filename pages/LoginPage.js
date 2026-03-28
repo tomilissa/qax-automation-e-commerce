@@ -89,6 +89,10 @@ this.loginPageTitle = 'Login';
 
   }
 
+  async clickOnContinue() {
+        await this.doClick(this.continueBtn)
+    }
+
 
 
 /* =========================
